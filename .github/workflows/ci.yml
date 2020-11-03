@@ -6,8 +6,22 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        ruby: [ '2.1.9', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', 'jruby' ]
+        ruby:
+          - ruby-3.0.0-preview1
+          - 2.7
+          - 2.6
+          - 2.5
+          - 2.4
+          - 2.3
+          - 2.2
+          - 2.1.9
+          - ruby-head
+          - jruby-9.1.17.0
+          - jruby-9.2.13.0
+          - jruby-head
+          - rbx-4
       fail-fast: false
+    continue-on-error: ${{ matrix.ruby == 'jruby-9.2.13.0' || endsWith(matrix.ruby, 'head') }}
     steps:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
