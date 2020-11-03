@@ -3,20 +3,21 @@ on: [pull_request, push]
 jobs:
   test:
     name: Ruby ${{ matrix.ruby }}
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        ruby: [ '2.3.0', '2.4.0', '2.5', '2.6', '2.7' ]
+        ruby: [ '2.1.9', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', 'jruby' ]
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
       - uses: actions/cache@v2
         with:
           path: ../bundle
           key: ${{ runner.os }}-${{ matrix.ruby }}
       - run: script/update_rubygems_and_install_bundler
       - run: script/clone_all_rspec_repos
-      - run: bundle install --binstubs --standalone --without documentation -- path ../bundle
+      - run: bundle install --binstubs --standalone
       - run: script/run_build
