@@ -33,6 +33,26 @@ module RSpec::Core
       end
     end
 
+    context "when the failing spec is in the second half of the group" do
+      it 'successfully finishes' do
+        output = bisect(%W[--order defined spec/rspec/core/resources/order_dependent/correct_specs.rb spec/rspec/core/resources/order_dependent/order_dependent_specs.rb], 0)
+        expect(output).to include(
+                              "The minimal reproduction command is:",
+                              "rspec ./spec/rspec/core/resources/order_dependent/order_dependent_specs.rb[1:1,1:3]"
+                          )
+      end
+    end
+
+    context "when the failing spec is in the first half of the group" do
+      it 'successfully finishes' do
+        output = bisect(%W[--order defined spec/rspec/core/resources/order_dependent/order_dependent_specs.rb  spec/rspec/core/resources/order_dependent/correct_specs.rb], 0)
+        expect(output).to include(
+          "The minimal reproduction command is:",
+          "rspec ./spec/rspec/core/resources/failure_is_not_in_the_end_specs.rb[1:1,1:3]"
+        )
+      end
+    end
+
     context "when the bisect command saturates the pipe" do
       # On OSX and Linux a file descriptor limit meant that the bisect process got stuck at a certain limit.
       # This test demonstrates that we can run large bisects above this limit (found to be at time of commit).
